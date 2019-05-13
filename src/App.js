@@ -6,7 +6,7 @@ import Canvas from './components/Canvas';
 function App() {
   return (
     <div className="App">
-      <Canvas />
+      <Canvas lineWidth="10" strokeStyle="#fff" />
     </div>
   );
 }

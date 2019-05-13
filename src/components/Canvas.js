@@ -7,8 +7,9 @@ class Canvas extends Component {
       offsetX: 0, offsetY: 0,
     },
   }
+
   hue = 0;
-  lineWidth = 1;
+  lineWidth = this.props.lineWidth;
 
   onMouseDown = ({nativeEvent}) => {
     const {offsetX, offsetY} = nativeEvent;
@@ -34,7 +35,6 @@ class Canvas extends Component {
     this.ctx = this.canvas.getContext('2d');
     this.ctx.lineJoin = 'round';
     this.ctx.lineCap = 'round';
-    this.ctx.lineWidth = 5;
   }
 
   endPaintEvent = ({nativeEvent}) => {
@@ -54,8 +54,10 @@ class Canvas extends Component {
   draw = (mousePos, currPos) => {
     const { offsetX, offsetY } = currPos;
     const { offsetX: x, offsetY: y } = mousePos;
-
-    this.ctx.strokeStyle = this.getColor();
+    const {strokeStyle} = this.props;
+    !this.props.strokeStyle ?
+      this.ctx.strokeStyle = this.getColor() :
+      this.ctx.strokeStyle = strokeStyle;
     this.ctx.lineWidth = this.lineWidth;
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
@@ -68,11 +70,11 @@ class Canvas extends Component {
 
   getColor() {
     this.hue++;
-    if ( this.hue == 360 ) {
-    this.hue = 0;
+    if ( this.hue === 360 ) {
+      this.hue = 0;
     }
-    return 'hsl(' + this.hue +', 100%, 50%)';
-    }
+    return `hsl(${this.hue}, 100%, 30%)`;
+  }
 
 
   render() {
