@@ -19,11 +19,36 @@ class Canvas extends Component {
     })
   }
 
+  onTouchStart = (event) => {
+    const rect = this.canvas.getBoundingClientRect();
+    const {pageX, pageY} = event.touches[0];
+    this.setState({
+      isPainting: true,
+      mousePos: {
+        offsetX: pageX-rect.left, 
+        offsetY: pageY-rect.top,
+      },
+    })
+  }
+
   onMouseMove = ({nativeEvent}) => {
     const {isPainting, mousePos} = this.state;
     if(isPainting) {
       const {offsetX, offsetY} = nativeEvent;
       const offSetData = { offsetX, offsetY };
+      this.draw(mousePos, offSetData);
+    }
+  }
+  onTouchMove = (event) => {
+    const {isPainting, mousePos} = this.state;
+    const rect = this.canvas.getBoundingClientRect();
+
+    if(isPainting) {
+      const {pageX, pageY} = event.touches[0];
+      const offSetData = { 
+        offsetX: pageX-rect.left, 
+        offsetY: pageY-rect.top 
+      };
       this.draw(mousePos, offSetData);
     }
   }
@@ -38,7 +63,6 @@ class Canvas extends Component {
 
   endPaintEvent = ({nativeEvent}) => {
     const {offsetX, offsetY} = nativeEvent;
-
     const {isPainting} = this.state;
     if (isPainting) {
       this.setState({
@@ -46,6 +70,19 @@ class Canvas extends Component {
         mousePos: {
           offsetX, offsetY
         }
+      })
+    }
+  }
+  endTouchEvent = (event) => {
+    const {pageX, pageY} = event.changedTouches[0];
+    const {isPainting} = this.state;
+    if (isPainting) {
+      this.setState({
+        isPainting: false,
+        mousePos: {
+          offsetX: pageX, 
+          offsetY: pageY
+        },
       })
     }
   }
@@ -85,9 +122,9 @@ class Canvas extends Component {
         onMouseLeave={this.endPaintEvent}
         onMouseUp={this.endPaintEvent}
         onMouseMove={this.onMouseMove}
-        onTouchStart={this.onMouseDown}
-        onTouchEnd={this.endPaintEvent}
-        onTouchMove={this.onMouseMove}
+        onTouchStart={this.onTouchStart}
+        onTouchEnd={this.endTouchEvent}
+        onTouchMove={this.onTouchMove}
       />
     );
   }
