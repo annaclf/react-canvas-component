@@ -10,24 +10,22 @@ class Canvas extends Component {
 
   hue = 0;
   lineWidth = this.props.lineWidth;
+  background = this.props.background;
 
+  componentDidMount() {
+    this.canvas.width = 300;
+    this.canvas.height = 300;
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.lineJoin = 'round';
+    this.ctx.lineCap = 'round';
+  }
+
+  // Click event
   onMouseDown = ({nativeEvent}) => {
     const {offsetX, offsetY} = nativeEvent;
     this.setState({
       isPainting: true,
       mousePos: {offsetX, offsetY},
-    })
-  }
-
-  onTouchStart = (event) => {
-    const rect = this.canvas.getBoundingClientRect();
-    const {pageX, pageY} = event.touches[0];
-    this.setState({
-      isPainting: true,
-      mousePos: {
-        offsetX: pageX-rect.left, 
-        offsetY: pageY-rect.top,
-      },
     })
   }
 
@@ -38,27 +36,6 @@ class Canvas extends Component {
       const offSetData = { offsetX, offsetY };
       this.draw(mousePos, offSetData);
     }
-  }
-  onTouchMove = (event) => {
-    const {isPainting, mousePos} = this.state;
-    const rect = this.canvas.getBoundingClientRect();
-
-    if(isPainting) {
-      const {pageX, pageY} = event.touches[0];
-      const offSetData = { 
-        offsetX: pageX-rect.left, 
-        offsetY: pageY-rect.top 
-      };
-      this.draw(mousePos, offSetData);
-    }
-  }
-
-  componentDidMount() {
-    this.canvas.width = 300;
-    this.canvas.height = 300;
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.lineJoin = 'round';
-    this.ctx.lineCap = 'round';
   }
 
   endPaintEvent = ({nativeEvent}) => {
@@ -73,6 +50,34 @@ class Canvas extends Component {
       })
     }
   }
+
+  // Touch event
+  onTouchStart = (event) => {
+    const rect = this.canvas.getBoundingClientRect();
+    const {pageX, pageY} = event.touches[0];
+    this.setState({
+      isPainting: true,
+      mousePos: {
+        offsetX: pageX-rect.left, 
+        offsetY: pageY-rect.top,
+      },
+    })
+  }
+
+  onTouchMove = (event) => {
+    const {isPainting, mousePos} = this.state;
+    const rect = this.canvas.getBoundingClientRect();
+
+    if(isPainting) {
+      const {pageX, pageY} = event.touches[0];
+      const offSetData = { 
+        offsetX: pageX-rect.left, 
+        offsetY: pageY-rect.top 
+      };
+      this.draw(mousePos, offSetData);
+    }
+  }
+
   endTouchEvent = (event) => {
     const {pageX, pageY} = event.changedTouches[0];
     const {isPainting} = this.state;
@@ -112,12 +117,11 @@ class Canvas extends Component {
     return `hsl(${this.hue}, 100%, 30%)`;
   }
 
-
   render() {
     return (
       <canvas
         ref={(ref) => (this.canvas = ref)}
-        style={{ background: 'black' }}
+        style={{ background: this.background }}
         onMouseDown={this.onMouseDown}
         onMouseLeave={this.endPaintEvent}
         onMouseUp={this.endPaintEvent}
